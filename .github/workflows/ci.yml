@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - bindings
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
@@ -11,7 +12,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -36,7 +37,7 @@ jobs:
   doc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           sudo apt-get update -qqy
           sudo apt-get install -qqy libudev-dev
@@ -65,7 +66,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - run: |
           sudo apt-get update -qqy
           sudo apt-get install -qqy libudev-dev
@@ -96,7 +97,7 @@ jobs:
   check-minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
@@ -172,7 +173,7 @@ jobs:
     container: ubuntu:focal
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           TZ=Etc/UTC
           ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
@@ -182,7 +183,7 @@ jobs:
       - name: Setup linux toolchain
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         run: |
-          sudo apt-get install -qqy libinput-dev
+          sudo apt-get install -y libudev-dev
       - name: Setup cross linux toolchain
         if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
         run: |
@@ -194,28 +195,7 @@ jobs:
           GCC_TARGET=$(printf "${{ matrix.target }}" | sed 's/-unknown-/-/' | sed 's/arm[^-]*/arm/g')
           ENV_TARGET=$(printf "${{ matrix.target }}" | tr '-' '_')
           ENV_TARGET_UC=$(printf "${ENV_TARGET}" | tr '[[:lower:]]' '[[:upper:]]')
-          sudo rm -f /etc/apt/sources.list.d/*.list
-          case "${{ matrix.target }}" in
-            arm* | aarch64*)
-          sudo tee /etc/apt/sources.list << EOF
-          deb [arch=i386,amd64] http://archive.ubuntu.com/ubuntu/ focal main universe
-          deb [arch=i386,amd64] http://archive.ubuntu.com/ubuntu/ focal-updates main universe
-          deb [arch=i386,amd64] http://security.ubuntu.com/ubuntu/ focal-security main universe
-          deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main universe
-          deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main universe
-          deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-security main universe
-          EOF
-              ;;
-          esac
-          sudo dpkg --add-architecture ${SYSTEM_ARCH}
-          dpkg --print-foreign-architectures
-          sudo apt-get update -qqy
-          sudo apt-get dist-upgrade -qqy --fix-broken
-          sudo apt-get install -qqy --fix-broken -o Debug::pkgProblemResolver=yes libinput-dev:${SYSTEM_ARCH} gcc-${GCC_TARGET} pkg-config-${GCC_TARGET}
           echo "CARGO_TARGET_${ENV_TARGET_UC}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
-          echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
-          echo "PKG_CONFIG_${ENV_TARGET}=${GCC_TARGET}-pkg-config" >> $GITHUB_ENV
-          echo "PKG_CONFIG=${GCC_TARGET}-pkg-config" >> $GITHUB_ENV
           echo "BINDGEN_EXTRA_CLANG_ARGS=\"-L/usr/lib/${GCC_TARGET} -L/lib/${GCC_TARGET}\"" >> $GITHUB_ENV
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
@@ -281,7 +261,7 @@ jobs:
       - test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download bindings
         uses: actions/download-artifact@v2
         with:
@@ -307,7 +287,7 @@ jobs:
       - test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
