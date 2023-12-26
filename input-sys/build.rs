@@ -32,9 +32,7 @@ fn main() {
     let version = lib_versions().next().unwrap();
 
     let bind_name = format!("gen_{}_{}.rs", version.0, version.1);
-    let bindings_file = Path::new("src")
-        .join("bindings")
-        .join(bind_name);
+    let bindings_file = Path::new("src").join("bindings").join(bind_name);
 
     if !bindings_file.is_file() {
         panic!(
