@@ -196,7 +196,8 @@ jobs:
           ENV_TARGET=$(printf "${{ matrix.target }}" | tr '-' '_')
           ENV_TARGET_UC=$(printf "${ENV_TARGET}" | tr '[[:lower:]]' '[[:upper:]]')
           echo "CARGO_TARGET_${ENV_TARGET_UC}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
-          echo "BINDGEN_EXTRA_CLANG_ARGS=\"-L/usr/lib/${GCC_TARGET} -L/lib/${GCC_TARGET}\"" >> $GITHUB_ENV
+          # echo "BINDGEN_EXTRA_CLANG_ARGS=\"-L/usr/lib/${GCC_TARGET} -L/lib/${GCC_TARGET}\"" >> $GITHUB_ENV
+          echo "BINDGEN_EXTRA_CLANG_ARGS=--sysroot=/usr/${GCC_TARGET}" >> $GITHUB_ENV
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
