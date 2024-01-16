@@ -237,10 +237,18 @@ jobs:
             LICENSE
             README.md
       - name: Build
+        if: contains(matrix.target, '-linux-') && (startsWith(matrix.target, 'x86_64-')
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --target ${{ matrix.target }}
+      - name: Build
+        if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          # Disable udev feature so we don't need library in cross-sysroot
+          args: --target ${{ matrix.target }} --no-default-features --features log,libinput_1_21
       - name: Test
         if: contains(matrix.target, '-linux-') && (startsWith(matrix.target, 'x86_64-') || startsWith(matrix.target, 'i686-'))
         uses: actions-rs/cargo@v1
