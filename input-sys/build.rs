@@ -79,7 +79,7 @@ fn main() {
             // TODO Use `std::ffi::VaList` when stable?
             .blocklist_type("libinput_log_handler")
             .blocklist_function("libinput_log_set_handler")
-            .blocklist_type("va_list")
+            .blocklist_type(".*va_list.*")
             .layout_tests(false)
             .generate()
             .unwrap();
