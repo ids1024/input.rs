@@ -14,9 +14,6 @@ edition = "2018"
 [lib]
 path = "src/lib.rs"
 
-[dependencies]
-libc = "0.2"
-
 [build-dependencies.bindgen]
 version = "0.69"
 optional = true
