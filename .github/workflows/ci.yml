@@ -237,7 +237,7 @@ jobs:
             LICENSE
             README.md
       - name: Build
-        if: contains(matrix.target, '-linux-') && (startsWith(matrix.target, 'x86_64-')
+        if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         uses: actions-rs/cargo@v1
         with:
           command: build
