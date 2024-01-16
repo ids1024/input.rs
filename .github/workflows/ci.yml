@@ -183,7 +183,7 @@ jobs:
       - name: Setup linux toolchain
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         run: |
-          sudo apt-get install -y libudev-dev
+          sudo apt-get install -y libinput-dev libudev-dev
       - name: Setup cross linux toolchain
         if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
         run: |
