@@ -238,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bindings
-          path: bindings-*.rs
+          path: gen_*.rs
       - name: Build
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         uses: actions-rs/cargo@v1
