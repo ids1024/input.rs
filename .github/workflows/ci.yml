@@ -235,7 +235,7 @@ jobs:
           done
       - name: Upload bindings
         if: matrix.task == 'bindings'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bindings
           path: bindings-*.rs
@@ -297,7 +297,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download bindings
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings
       - name: Create pull request
