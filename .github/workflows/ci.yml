@@ -192,7 +192,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y gcc-${GCC_TARGET}
           echo "CARGO_TARGET_${ENV_TARGET}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
-          echo "BINDGEN_EXTRA_CLANG_ARGS=--sysroot=/usr/${GCC_TARGET}" >> $GITHUB_ENV
+          echo "BINDGEN_EXTRA_CLANG_ARGS=--sysroot=/usr/${GCC_TARGET} -isystem ${PWD}.github/workflows/cross-include" >> $GITHUB_ENV
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
