@@ -26,9 +26,14 @@ optional = true
 version = "1.0.76"
 optional = true
 
+# Fix for `-Z minimal-versions`
+[build-dependencies.regex]
+version = "1.10"
+optional = true
+
 [features]
 default = ["libinput_1_21"]
-gen = ["bindgen", "proc-macro2"]
+gen = ["bindgen", "proc-macro2", "regex"]
 update_bindings = ["gen"]
 libinput_1_11 = []
 libinput_1_14 = []
