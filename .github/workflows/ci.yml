@@ -187,16 +187,11 @@ jobs:
       - name: Setup cross linux toolchain
         if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
         run: |
-          case "${{ matrix.target }}" in
-            i686-*) SYSTEM_ARCH=i386 ;;
-            arm*) SYSTEM_ARCH=armhf ;;
-            aarch64*) SYSTEM_ARCH=arm64 ;;
-          esac
-          GCC_TARGET=$(printf "${{ matrix.target }}" | sed 's/-unknown-/-/' | sed 's/arm[^-]*/arm/g')
-          ENV_TARGET=$(printf "${{ matrix.target }}" | tr '-' '_')
-          ENV_TARGET_UC=$(printf "${ENV_TARGET}" | tr '[[:lower:]]' '[[:upper:]]')
-          echo "CARGO_TARGET_${ENV_TARGET_UC}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
-          # echo "BINDGEN_EXTRA_CLANG_ARGS=\"-L/usr/lib/${GCC_TARGET} -L/lib/${GCC_TARGET}\"" >> $GITHUB_ENV
+          GCC_TARGET=$(printf "${{ matrix.target }}" | sed 's/-unknown-/-/;s/arm[^-]*/arm/;s/riscv[^-]*/riscv64/')
+          ENV_TARGET=$(printf "${{ matrix.target }}" | tr '-' '_'  | tr '[[:lower:]]' '[[:upper:]]')
+          sudo apt-get update -y
+          sudo apt-get install -y gcc-${GCC_TARGET}
+          echo "CARGO_TARGET_${ENV_TARGET}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
           echo "BINDGEN_EXTRA_CLANG_ARGS=--sysroot=/usr/${GCC_TARGET}" >> $GITHUB_ENV
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
