@@ -227,15 +227,18 @@ jobs:
         with:
           command: build
           args: --manifest-path input-sys/Cargo.toml --target ${{ matrix.target }} --no-default-features --features update_bindings,libinput_1_11,libinput_1_14,libinput_1_15,libinput_1_19,libinput_1_21
+      - name: Copy bindings
+        run: |
+          for i in input-sys/src/bindings/*.rs
+          do
+              cp $i bindings-${{ matrix.target }}.rs $(basename $i .rs)-${{ matrix.target }}.rs
+          done
       - name: Upload bindings
         if: matrix.task == 'bindings'
         uses: actions/upload-artifact@v2
         with:
           name: bindings
-          path: |
-            input-sys/${{ env.INPUT_SYS_BINDINGS_FILE }}
-            LICENSE
-            README.md
+          path: bindings-*.rs
       - name: Build
         if: contains(matrix.target, '-linux-') && startsWith(matrix.target, 'x86_64-')
         uses: actions-rs/cargo@v1
@@ -259,6 +262,34 @@ jobs:
           command: test
           args: --all --target ${{ matrix.target }}
 
+  # TODO compare bindings
+  compare-bindings:
+    needs:
+      - test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: download bindings
+        uses: actions/download-artifact@v3
+        with:
+          name: bindings
+      - name: compare
+        run: |
+          code=0
+          for i in gen_*.rs
+          do
+            base=$(echo ${i} | cut -f 1 -d -)
+            if cmp -s ${base}-x86_64-unknown-linux-gnu.rs ${i}
+            then
+              echo ${i} matches x86_64 bindings
+            else
+              echo ${i} does not match x86_64 bindings
+              diff bindings-x86_64-unknown-linux-gnu.rs ${i}
+              code=1
+            fi
+          done
+          exit ${code}
+
+  # TODO update/test
   update-bindings:
     if: ${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/') }}
     needs:
